@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MacketRouter", "MacketRouter\MacketRouter.csproj", "{87B0356E-1936-44EB-921A-9053B8EA6C53}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MacketRouter.Test", "MacketRouter.Test\MacketRouter.Test.csproj", "{51FBDD5E-0533-4BD2-A65B-A338BE4E26D6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{87B0356E-1936-44EB-921A-9053B8EA6C53}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{87B0356E-1936-44EB-921A-9053B8EA6C53}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{87B0356E-1936-44EB-921A-9053B8EA6C53}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{87B0356E-1936-44EB-921A-9053B8EA6C53}.Release|Any CPU.Build.0 = Release|Any CPU
+		{51FBDD5E-0533-4BD2-A65B-A338BE4E26D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{51FBDD5E-0533-4BD2-A65B-A338BE4E26D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{51FBDD5E-0533-4BD2-A65B-A338BE4E26D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{51FBDD5E-0533-4BD2-A65B-A338BE4E26D6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
