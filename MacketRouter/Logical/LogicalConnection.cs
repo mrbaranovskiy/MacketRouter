@@ -9,10 +9,10 @@ class LogicalConnection : ILogicalConnection
 
     public IReadOnlyList<AbstractLogicalPin> ConnectedPins => _connections;
     
-    //todo: need to replace List with some set and remove the duplicates of the same connection.
     public void AddConnection(AbstractLogicalPin pin)
     {
-        _connections.Add(pin);
+        if(!_connections.Contains(pin))
+            _connections.Add(pin);
     }
 
     public void AddConnection(params AbstractLogicalPin[] pins)
@@ -22,7 +22,8 @@ class LogicalConnection : ILogicalConnection
 
     public void RemoveConnection(AbstractLogicalPin pin)
     {
-        _connections.Remove(pin);
+        if(_connections.Contains(pin))
+            _connections.Remove(pin);
     }
 
     public void RemoveConnection(params AbstractLogicalPin[] pins)
