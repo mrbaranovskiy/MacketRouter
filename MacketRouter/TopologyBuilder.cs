@@ -1,4 +1,5 @@
-﻿using MacketRouter.Logical.LogicalElements;
+﻿using MacketRouter.Logical;
+using MacketRouter.Logical.LogicalElements;
 using MacketRouter.Utilities;
 
 namespace MacketRouter;
@@ -6,7 +7,8 @@ namespace MacketRouter;
 internal enum LogicalElementType
 {
     Resistor, Capasitor, Inductor, Diod, Groud, VCC,
-    Wire
+    Wire,
+    Transistor
 }
 
 internal sealed class TopologyBuilder
@@ -32,6 +34,7 @@ internal sealed class TopologyBuilder
             LogicalElementType.Groud => new LogicalGround {Name = name},
             LogicalElementType.VCC => new LogicalVcc() {Name = name},
             LogicalElementType.Wire => new LogicalWire() {Name = name},
+            LogicalElementType.Transistor => new LogicalTransistor() {Name = name},
             _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
         };
     }
@@ -41,7 +44,40 @@ internal sealed class TopologyBuilder
         AutoCount(type);
         return (T) CreateElement(type, name);
     }
+
+    private Dictionary<string, AbstractLogicalPin> _connectionsNetwork = new Dictionary<string, AbstractLogicalPin>();
     
+    public T CreateElement<T>(LogicalElementType type, string name, params string[] conns) where T : ILogicalElement
+    {
+        AutoCount(type);
+        var elem = (T) CreateElement(type, name);
+        AddToNetwork(elem, conns);
+        return elem;
+    }
+
+    private void AddToNetwork<T>(T elem, string[] connectionLabels) where T : ILogicalElement
+    {
+        if (elem.Pins.Count != connectionLabels.Length) throw new Exception("Data is inconsistent.An element has beeb created incorrectly!!!");
+        
+        foreach ((string label, AbstractLogicalPin pin) zip in connectionLabels.Zip(elem.Pins))
+        {
+            if (_connectionsNetwork.ContainsKey(zip.label))
+            {
+                var targetPin = _connectionsNetwork[zip.label];
+                zip.pin.ConnectTo(targetPin);
+            }
+            else
+            {
+                _connectionsNetwork[zip.label] = zip.pin;
+            }
+        }
+    }
+
+    public bool Contains(ILogicalElement element)
+    {
+        return _registry.Contains(element);
+    }
+
     public T CreateElement<T>(LogicalElementType type) where T : ILogicalElement
     {
         AutoCount(type);
@@ -61,15 +97,39 @@ internal sealed class TopologyBuilder
             ExceptionHelper.Throw($"Such element has been already created {newItem}");
         }
 
-      
         _registry.Add(newItem);
-
         return newItem;
     }
 
-    public bool Contains(ILogicalElement element)
+    public void Build(string[] scheme)
     {
-        return _registry.Contains(element);
+        if (scheme == null) throw new ArgumentNullException(nameof(scheme));
+        if (scheme.Length == 0) throw new ArgumentException("Value cannot be an empty collection.", nameof(scheme));
+
+        foreach (var element in scheme)
+        {
+            ParseLogicalElement(element);
+        }
+    }
+
+    private ILogicalElement ParseLogicalElement(string data)
+    {
+        var split = data.Split(' ');
+        return split switch
+        {
+            ["R", string name, string a, string b] 
+                => this.CreateElement<LogicalResistor>(LogicalElementType.Resistor, name, a, b),
+            ["C", string name, string a, string b]
+                => this.CreateElement<LogicalCapasitor>(LogicalElementType.Capasitor, name, a, b),
+            ["L", string name, string a, string b]
+                => this.CreateElement<LogicalInductor>(LogicalElementType.Inductor, name, a, b),
+            ["T", string name, string e, string b, string c]
+                => this.CreateElement<LogicalInductor>(LogicalElementType.Transistor, name, e, b, c),
+            ["GND", string name, string gnd] 
+                => this.CreateElement<LogicalResistor>(LogicalElementType.Groud, name, gnd),
+            ["VCC", string name, string vcc] 
+                => this.CreateElement<LogicalResistor>(LogicalElementType.VCC, name, vcc),
+        };
     }
 
     private void AutoCount(LogicalElementType type)
