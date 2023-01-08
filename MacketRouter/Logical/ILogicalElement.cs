@@ -5,12 +5,13 @@ namespace MacketRouter.Logical
     namespace LogicalElements
     {
         /// <summary> Represents the logical radio element. </summary>
-        interface ILogicalElement : IEquatable<ILogicalElement>, IEqualityComparer<ILogicalElement>
+        interface ILogicalElement : IEquatable<ILogicalElement>, IComparable<ILogicalElement>
         {
             IReadOnlyList<AbstractLogicalPin> Pins { get; }
+            string Name { get; set; }
         }
 
-        abstract class AbstractLogicalElement : ILogicalElement
+        abstract class AbstractLogicalElement : ILogicalElement, IComparable<AbstractLogicalElement>
         {
             protected AbstractLogicalElement(List<LogicalPin> defaultPins)
             {
@@ -24,29 +25,6 @@ namespace MacketRouter.Logical
             public IReadOnlyList<AbstractLogicalPin> Pins { get; }
             public required string Name { get; set; }
 
-            public bool Equals(AbstractLogicalElement other)
-            {
-                return Pins.Equals(other.Pins) && Name == other.Name;
-            }
-
-            public bool Equals(ILogicalElement? other)
-            {
-                return Pins.Equals(other.Pins);
-            }
-
-            public override bool Equals(object? obj)
-            {
-                if (ReferenceEquals(null, obj)) return false;
-                if (ReferenceEquals(this, obj)) return true;
-                if (obj.GetType() != this.GetType()) return false;
-                return Equals((AbstractLogicalElement) obj);
-            }
-
-            public override int GetHashCode()
-            {
-                return HashCode.Combine(Pins, Name);
-            }
-
             public bool Equals(ILogicalElement x, ILogicalElement y)
             {
                 if (ReferenceEquals(x, y)) return true;
@@ -59,6 +37,41 @@ namespace MacketRouter.Logical
             public int GetHashCode(ILogicalElement obj)
             {
                 return obj.Pins.GetHashCode();
+            }
+
+            public int CompareTo(AbstractLogicalElement? other)
+            {
+                if (ReferenceEquals(this, other)) return 0;
+                if (ReferenceEquals(null, other)) return 1;
+                return string.Compare(Name, other.Name, StringComparison.Ordinal);
+            }
+
+            public int CompareTo(ILogicalElement? other)
+            {
+                return string.Compare(Name, other?.Name, StringComparison.Ordinal);
+            }
+
+            protected bool Equals(AbstractLogicalElement other)
+            {
+                return Name == other.Name;
+            }
+
+            public bool Equals(ILogicalElement? other)
+            {
+                return Name == other?.Name;
+            }
+
+            public override bool Equals(object? obj)
+            {
+                if (ReferenceEquals(null, obj)) return false;
+                if (ReferenceEquals(this, obj)) return true;
+                if (obj.GetType() != this.GetType()) return false;
+                return Equals((AbstractLogicalElement) obj);
+            }
+
+            public override int GetHashCode()
+            {
+                return Name.GetHashCode();
             }
         }
 
@@ -132,6 +145,10 @@ namespace MacketRouter.Logical
             )
             {
             }
+            
+            public AbstractLogicalPin Anod => this.Pins[0];
+            public AbstractLogicalPin Cathode => this.Pins[1];
+            
         }
 
         class LogicalGround : AbstractLogicalElement
@@ -149,6 +166,27 @@ namespace MacketRouter.Logical
             })
             {
             }
+            
+            public AbstractLogicalPin Gnd => this.Pins[0];
+        }
+        
+        class LogicalVcc : AbstractLogicalElement
+        {
+            public LogicalVcc() : base(new List<LogicalPin>()
+            {
+                new LogicalPin()
+                {
+                    Description = new PinDescription()
+                    {
+                        Id = new PinId(0, 0),
+                        Purpose = PinDescription.PinPurpose.Vcc
+                    }
+                }
+            })
+            {
+            }
+            
+            public AbstractLogicalPin Input => this.Pins[0];
         }
 
         class LogicalTransistor : AbstractLogicalElement

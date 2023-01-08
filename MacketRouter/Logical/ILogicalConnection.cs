@@ -5,6 +5,10 @@
 /// </summary>
 interface ILogicalConnection
 {
-    AbstractLogicalPin Owner { get; }
-    AbstractLogicalPin Reference { get; }
+    bool IsEmpty {get;}
+    IReadOnlyList<AbstractLogicalPin> ConnectedPins { get; }
+    void AddConnection(AbstractLogicalPin pin);
+    void AddConnection(params AbstractLogicalPin[] pins);
+    void RemoveConnection(AbstractLogicalPin pin);
+    void RemoveConnection(params AbstractLogicalPin[] pins );
 }

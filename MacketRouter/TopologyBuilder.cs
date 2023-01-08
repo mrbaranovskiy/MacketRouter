@@ -1,33 +1,41 @@
 ﻿using MacketRouter.Logical.LogicalElements;
+using MacketRouter.Utilities;
 
 namespace MacketRouter;
 
 internal enum LogicalElementType
 {
-    Resistor, Capasitor, Inductor, Diod, Groud
+    Resistor, Capasitor, Inductor, Diod, Groud, VCC,
+    Wire
 }
 
 internal sealed class TopologyBuilder
 {
-    private HashSet<ILogicalElement> _registry = new HashSet<ILogicalElement>();
+    private readonly HashSet<ILogicalElement> _registry;
+
+    public TopologyBuilder()
+    {
+        _registry = new HashSet<ILogicalElement>();
+    }
 
     private ILogicalElement CreateElementInternal(LogicalElementType type, string name)
     {
-        switch (type)
+        return type switch
         {
-            case LogicalElementType.Resistor:
-                return new LogicalResistor {Name = name};
-            case LogicalElementType.Capasitor:
-                return new LogicalCapasitor {Name = name};
-            case LogicalElementType.Inductor:
-                return new LogicalInductor {Name = name};
-            case LogicalElementType.Diod:
-                return new LogicalDiod {Name = name};
-            case LogicalElementType.Groud:
-                return new LogicalGround {Name = name};
-            default:
-                throw new ArgumentOutOfRangeException(nameof(type), type, null);
-        }
+            LogicalElementType.Resistor => new LogicalResistor {Name = name},
+            LogicalElementType.Capasitor => new LogicalCapasitor {Name = name},
+            LogicalElementType.Inductor => new LogicalInductor {Name = name},
+            LogicalElementType.Diod => new LogicalDiod {Name = name},
+            LogicalElementType.Groud => new LogicalGround {Name = name},
+            LogicalElementType.VCC => new LogicalVcc() {Name = name},
+            LogicalElementType.Wire => new LogicalWire() {Name = name},
+            _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
+        };
+    }
+
+    public T CreateElement<T>(LogicalElementType type, string name) where T : ILogicalElement
+    {
+        return (T) CreateElement(type, name);
     }
 
     public ILogicalElement CreateElement(LogicalElementType type, string name)
@@ -37,6 +45,12 @@ internal sealed class TopologyBuilder
         if (string.IsNullOrEmpty(name)) throw new ArgumentException("Value cannot be null or empty.", nameof(name));
         
         var newItem = CreateElementInternal(type, name);
+        
+        if (_registry.Contains(newItem))
+        {
+            ExceptionHelper.Throw($"Such element has been already created {newItem}");
+        }
+        
         _registry.Add(newItem);
 
         return newItem;

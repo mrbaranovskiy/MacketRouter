@@ -2,15 +2,31 @@
 
 class LogicalConnection : ILogicalConnection
 {
-    public LogicalConnection(AbstractLogicalPin owner, AbstractLogicalPin reference)
-    {
-        Owner = owner ?? throw new ArgumentNullException(nameof(owner));
-        Reference = reference ?? throw new ArgumentNullException(nameof(reference));
-        
-        if (Owner == Reference)
-            throw new ArgumentException("Owner equals reference");
-    }
+    private readonly List<AbstractLogicalPin> _connections;
+    public LogicalConnection() => _connections = new List<AbstractLogicalPin>();
+
+    public bool IsEmpty => !ConnectedPins.Any();
+
+    public IReadOnlyList<AbstractLogicalPin> ConnectedPins => _connections;
     
-    public AbstractLogicalPin Owner { get; }
-    public AbstractLogicalPin Reference { get; }
+    //todo: need to replace List with some set and remove the duplicates of the same connection.
+    public void AddConnection(AbstractLogicalPin pin)
+    {
+        _connections.Add(pin);
+    }
+
+    public void AddConnection(params AbstractLogicalPin[] pins)
+    {
+        foreach (var p in pins) AddConnection(p);
+    }
+
+    public void RemoveConnection(AbstractLogicalPin pin)
+    {
+        _connections.Remove(pin);
+    }
+
+    public void RemoveConnection(params AbstractLogicalPin[] pins)
+    {
+        foreach (var pin in pins) RemoveConnection(pin);
+    }
 }

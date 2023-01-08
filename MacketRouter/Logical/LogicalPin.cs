@@ -2,5 +2,5 @@
 
 internal class LogicalPin : AbstractLogicalPin
 {
-    public override IReadOnlyCollection<ILogicalConnection> Connections => _logicalConnections;
+    public override ILogicalConnection? Connections => _logicalConnection;
 }
