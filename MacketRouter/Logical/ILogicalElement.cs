@@ -106,10 +106,12 @@ namespace MacketRouter.Logical
 
         class LogicalResistor : LogicalDuoPole
         {
+           
         }
 
         class LogicalCapasitor : LogicalDuoPole
         {
+            
         }
 
         class LogicalInductor : LogicalDuoPole

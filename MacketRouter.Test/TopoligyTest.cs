@@ -1,4 +1,5 @@
-﻿using MacketRouter.Logical.LogicalElements;
+﻿using MacketRouter.DataStructures;
+using MacketRouter.Logical.LogicalElements;
 
 namespace MacketRouter.Test;
 

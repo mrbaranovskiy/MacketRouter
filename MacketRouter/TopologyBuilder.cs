@@ -1,15 +1,9 @@
-﻿using MacketRouter.Logical;
+﻿using MacketRouter.DataStructures;
+using MacketRouter.Logical;
 using MacketRouter.Logical.LogicalElements;
 using MacketRouter.Utilities;
 
 namespace MacketRouter;
-
-internal enum LogicalElementType
-{
-    Resistor, Capasitor, Inductor, Diod, Groud, VCC,
-    Wire,
-    Transistor
-}
 
 internal sealed class TopologyBuilder
 {
@@ -129,6 +123,7 @@ internal sealed class TopologyBuilder
                 => this.CreateElement<LogicalResistor>(LogicalElementType.Groud, name, gnd),
             ["VCC", string name, string vcc] 
                 => this.CreateElement<LogicalResistor>(LogicalElementType.VCC, name, vcc),
+            _ => throw new ArgumentException("Cannot parse input pattern")
         };
     }
 
@@ -148,6 +143,8 @@ internal sealed class TopologyBuilder
         LogicalElementType.Inductor => $"L{_counters[type]}",
         LogicalElementType.Wire => $"Wire{_counters[type]}",
         LogicalElementType.VCC => $"Vcc{_counters[type]}",
+        _ => throw new ArgumentException("Cannot parse")
+        
     };
 
 }

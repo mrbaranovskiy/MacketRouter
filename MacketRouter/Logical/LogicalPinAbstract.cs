@@ -96,7 +96,7 @@ abstract class AbstractLogicalPin  : IEquatable<AbstractLogicalPin>, IEqualityCo
         return HashCode.Combine(_logicalConnection, Description, Connection);
     }
 
-    public bool Equals(AbstractLogicalPin x, AbstractLogicalPin y)
+    public bool Equals(AbstractLogicalPin? x, AbstractLogicalPin? y)
     {
         if (ReferenceEquals(x, y)) return true;
         if (ReferenceEquals(x, null)) return false;
