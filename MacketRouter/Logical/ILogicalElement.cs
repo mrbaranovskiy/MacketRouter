@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using MacketRouter.DataStructures;
 
 namespace MacketRouter.Logical
 {
@@ -8,14 +9,18 @@ namespace MacketRouter.Logical
         interface ILogicalElement : IEquatable<ILogicalElement>, IComparable<ILogicalElement>
         {
             IReadOnlyList<AbstractLogicalPin> Pins { get; }
+            ComponentsLibrary.FrameType FrameType { get; }
             string Name { get; set; }
         }
 
         abstract class AbstractLogicalElement : ILogicalElement, IComparable<AbstractLogicalElement>
         {
-            protected AbstractLogicalElement(List<LogicalPin> defaultPins)
+            protected AbstractLogicalElement(List<LogicalPin> defaultPins,
+                ComponentsLibrary.FrameType frame = ComponentsLibrary.FrameType.Generic)
             {
                 Pins = defaultPins;
+
+                FrameType = frame;
 
                 foreach (var pin in defaultPins)
                     pin.Description.SetDisplayedParent(this);
@@ -24,6 +29,8 @@ namespace MacketRouter.Logical
 
             public IReadOnlyList<AbstractLogicalPin> Pins { get; }
             public required string Name { get; set; }
+            
+            public virtual ComponentsLibrary.FrameType FrameType { get; }
 
             public bool Equals(ILogicalElement x, ILogicalElement y)
             {

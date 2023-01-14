@@ -19,8 +19,8 @@ interface IBlock
 {
     public BlockRange Range { get; }
     public void ExtendBlock(BlockRange index);
-    public int BlockHeight { get; }
-    public int BlockWidth { get; }
+    public static int MaxBlockHeight { get; }
+    public static int MaxBlockWidth { get; }
     public ImmutableHashSet<PhysicalPin> Pins { get; }
 }
 
@@ -54,13 +54,13 @@ class StandardBlock : IBlock
     
     public void ExtendBlock(BlockRange index)
     {
-        if (index.To > BlockWidth)
-            throw new ArgumentOutOfRangeException($"The block extent should be in range ({BlockHeight}, {BlockWidth})");
+        if (index.To > MaxBlockWidth)
+            throw new ArgumentOutOfRangeException($"The block extent should be in range ({MaxBlockHeight}, {MaxBlockWidth})");
 
         // fast and dirty.
         for (int i = index.From; i <= index.To ; i++)
         {
-            for (int j = 0; j < BlockHeight; j++)
+            for (int j = 0; j < MaxBlockHeight; j++)
             {
                 var newPin = new PhysicalPin(i, j);
                 
@@ -72,8 +72,8 @@ class StandardBlock : IBlock
         _immutable = _pinsEncluded.ToImmutableHashSet();
     }
 
-    public int BlockHeight => 5;
-    public int BlockWidth => 60;
+    public int MaxBlockHeight => 5;
+    public int MaxBlockWidth => 60;
     public ImmutableHashSet<PhysicalPin> Pins => _immutable;
 }
 
@@ -83,12 +83,4 @@ public class Board
     {
         Top, Low
     }   
-}
-
-internal class Element : IElement
-{
-    public IList<IPosition> GetConnectors()
-    {
-        throw new NotImplementedException();
-    }
 }

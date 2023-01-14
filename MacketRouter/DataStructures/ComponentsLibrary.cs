@@ -1,11 +1,10 @@
-﻿using MacketRouter.DataStructures;
-
-namespace MacketRouter.DataStructures;
+﻿namespace MacketRouter.DataStructures;
 
 public static class ComponentsLibrary
 {
-    public enum LibraryElement
-    { 
+    public enum FrameType
+    {
+        Generic,
         ResistorAXIAL04,
         ResistorAXIAL03, //7.6 mm
         ResistorAXIAL05,
@@ -21,24 +20,25 @@ public static class ComponentsLibrary
     
     //todo: put all this stuff to the configuration file.
     
-    private static Dictionary<LibraryElement, ElementSize> SizeMap = new Dictionary<LibraryElement, ElementSize>()
+    private static Dictionary<FrameType, ElementSize> SizeMap = new Dictionary<FrameType, ElementSize>()
     {
-        {LibraryElement.ResistorAXIAL03, new ElementSize(1, 4)}, 
-        {LibraryElement.ResistorAXIAL1, new ElementSize(2, 4)}, 
-        {LibraryElement.CapasitorElectrolitiс, new ElementSize(1, 3)}, 
-        {LibraryElement.Capacitor, new ElementSize(1, 4)},
-        {LibraryElement.Diod, new ElementSize(1, 4)},
-        {LibraryElement.TransitorDIP308, new ElementSize(1, 3)},
+        {FrameType.ResistorAXIAL03, new ElementSize(1, 4)}, 
+        {FrameType.ResistorAXIAL1, new ElementSize(2, 4)}, 
+        {FrameType.CapasitorElectrolitiс, new ElementSize(1, 3)}, 
+        {FrameType.Capacitor, new ElementSize(1, 4)},
+        {FrameType.Diod, new ElementSize(1, 4)},
+        {FrameType.TransitorDIP308, new ElementSize(1, 3)},
+        {FrameType.Generic, new ElementSize(1, 4)},
     };
 
-    public static ElementSize MapSize(LibraryElement element) => element switch
+    public static ElementSize MapSize(FrameType element) => element switch
     {
-        LibraryElement.Capacitor => SizeMap[LibraryElement.Capacitor],
-        LibraryElement.TransitorDIP308 => SizeMap[LibraryElement.TransitorDIP308],
-        LibraryElement.Diod => SizeMap[LibraryElement.Diod],
-        LibraryElement.ResistorAXIAL03 => SizeMap[LibraryElement.ResistorAXIAL03],
-        LibraryElement.CapasitorElectrolitiс => SizeMap[LibraryElement.CapasitorElectrolitiс],
-        LibraryElement.ResistorAXIAL1 => SizeMap[LibraryElement.ResistorAXIAL1],
+        FrameType.Capacitor => SizeMap[FrameType.Capacitor],
+        FrameType.TransitorDIP308 => SizeMap[FrameType.TransitorDIP308],
+        FrameType.Diod => SizeMap[FrameType.Diod],
+        FrameType.ResistorAXIAL03 => SizeMap[FrameType.ResistorAXIAL03],
+        FrameType.CapasitorElectrolitiс => SizeMap[FrameType.CapasitorElectrolitiс],
+        FrameType.ResistorAXIAL1 => SizeMap[FrameType.ResistorAXIAL1],
         
         _ => throw new ArgumentOutOfRangeException("This element has no mapping in library")
     };
