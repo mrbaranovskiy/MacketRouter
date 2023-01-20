@@ -15,7 +15,8 @@ public static class ComponentsLibrary
         CapacitorCeramic,
         Capacitor, 
         Diod,
-        TransitorDIP308
+        TransitorDIP308,
+        Ground
     }
     
     //todo: put all this stuff to the configuration file.
@@ -29,6 +30,7 @@ public static class ComponentsLibrary
         {FrameType.Diod, new ElementSize(1, 4)},
         {FrameType.TransitorDIP308, new ElementSize(1, 3)},
         {FrameType.Generic, new ElementSize(1, 4)},
+        {FrameType.Ground, new ElementSize(1, 1)},
     };
 
     public static ElementSize MapSize(FrameType element) => element switch

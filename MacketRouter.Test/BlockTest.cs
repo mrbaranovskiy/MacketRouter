@@ -32,6 +32,5 @@ public class ElementsRectTest
     [TestMethod]
     public void RectsIntersectionTest()
     {
-        
     }
 }

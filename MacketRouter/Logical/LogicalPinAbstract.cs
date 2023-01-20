@@ -1,6 +1,4 @@
-﻿using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using MacketRouter.Utilities;
+﻿using MacketRouter.Logical.LogicalElements;
 
 namespace MacketRouter.Logical;
 
@@ -12,6 +10,22 @@ abstract class AbstractLogicalPin  : IEquatable<AbstractLogicalPin>, IEqualityCo
     protected internal ILogicalConnection? _logicalConnection;
     public required PinDescription Description { get; set; }
     abstract public ILogicalConnection? Connection { get; }
+
+    public ILogicalElement Owner { get; private set; }
+
+    /// <summary>
+    /// Can be excecuted once
+    /// </summary>
+    /// <exception cref="InvalidOperationException"></exception>
+    public void SetOwner(ILogicalElement owner)
+    {
+        if (Owner is { })
+            throw new InvalidOperationException("Owner is already set");
+        if (owner is null)
+            throw new ArgumentNullException(nameof(owner));
+
+        Owner = owner;
+    }
 
     public virtual void ConnectTo(AbstractLogicalPin pin)
     {

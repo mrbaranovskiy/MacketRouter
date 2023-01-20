@@ -20,6 +20,11 @@ namespace MacketRouter.Logical
             {
                 Pins = defaultPins;
 
+                foreach (var pin in Pins)
+                {
+                    pin.SetOwner(this);
+                }
+
                 FrameType = frame;
 
                 foreach (var pin in defaultPins)
@@ -93,7 +98,7 @@ namespace MacketRouter.Logical
                         {
                             Id = new PinId(0, 0),
                             Purpose = PinDescription.PinPurpose.A
-                        }
+                        },
                     },
                     new LogicalPin
                     {
@@ -127,6 +132,12 @@ namespace MacketRouter.Logical
 
         class LogicalWire : LogicalDuoPole
         {
+            public LogicalWire(ElementSize size)
+            {
+                Size = size;
+            }
+
+            public ElementSize Size { get; }
         }
 
         class LogicalDiod : AbstractLogicalElement
@@ -151,7 +162,7 @@ namespace MacketRouter.Logical
                         }
                     }
                 }
-            )
+            , ComponentsLibrary.FrameType.Diod)
             {
             }
             
@@ -172,10 +183,10 @@ namespace MacketRouter.Logical
                         Purpose = PinDescription.PinPurpose.GND
                     }
                 }
-            })
+            }, ComponentsLibrary.FrameType.Ground)
             {
             }
-            
+
             public AbstractLogicalPin Gnd => this.Pins[0];
         }
         
@@ -191,7 +202,7 @@ namespace MacketRouter.Logical
                         Purpose = PinDescription.PinPurpose.Vcc
                     }
                 }
-            })
+            }, ComponentsLibrary.FrameType.Ground)
             {
             }
             

@@ -1,3 +1,4 @@
+using MacketRouter.DataStructures;
 using MacketRouter.Logical.LogicalElements;
 
 namespace MacketRouter.Test;
@@ -59,7 +60,6 @@ public class SimpleTest
         var c3 = new LogicalCapasitor {Name = "C3"};
         
         r1.PinA.ConnectTo(c1.PinB, c2.PinB, c3.PinB);
-        
         Assert.IsTrue(r1.PinA.Connection?.ConnectedPins.Count == 4);
     }
 }

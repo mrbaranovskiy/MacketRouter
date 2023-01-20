@@ -17,34 +17,56 @@ internal sealed class TopologyBuilder
         _counters = new Dictionary<LogicalElementType, int>();
     }
 
-    private ILogicalElement CreateElementInternal(LogicalElementType type, string name)
+    private ILogicalElement CreateElementInternal(LogicalElementType type, string name, object[] parameters)
     {
-        return type switch
+        switch (type)
         {
-            LogicalElementType.Resistor => new LogicalResistor {Name = name},
-            LogicalElementType.Capasitor => new LogicalCapasitor {Name = name},
-            LogicalElementType.Inductor => new LogicalInductor {Name = name},
-            LogicalElementType.Diod => new LogicalDiod {Name = name},
-            LogicalElementType.Groud => new LogicalGround {Name = name},
-            LogicalElementType.VCC => new LogicalVcc() {Name = name},
-            LogicalElementType.Wire => new LogicalWire() {Name = name},
-            LogicalElementType.Transistor => new LogicalTransistor() {Name = name},
-            _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
-        };
+            case LogicalElementType.Resistor:
+                return new LogicalResistor {Name = name};
+            case LogicalElementType.Capasitor:
+                return new LogicalCapasitor {Name = name};
+            case LogicalElementType.Inductor:
+                return new LogicalInductor {Name = name};
+            case LogicalElementType.Diod:
+                return new LogicalDiod {Name = name};
+            case LogicalElementType.Groud:
+                return new LogicalGround {Name = name};
+            case LogicalElementType.VCC:
+                return new LogicalVcc() {Name = name};
+            case LogicalElementType.Wire:
+            {
+                if (parameters is not { } || !parameters.Any())
+                    throw new ArgumentNullException("Wire parameters are null or emptry!");
+                
+                if (parameters[0] is ElementSize size)
+                {
+                    return new LogicalWire(size) {Name = name};
+                }
+
+                throw new ArgumentException("Incorrect argument is passed to setup wire.");
+            }
+            case LogicalElementType.Transistor:
+                return new LogicalTransistor() {Name = name};
+            default:
+                throw new ArgumentOutOfRangeException(nameof(type), type, null);
+        }
     }
 
-    public T CreateElement<T>(LogicalElementType type, string name) where T : ILogicalElement
+    public T BuildElement<T>(LogicalElementType type, string name) where T : ILogicalElement
     {
         AutoCount(type);
-        return (T) CreateElement(type, name);
+        return (T) BuildElement(type, name);
     }
 
     private Dictionary<string, AbstractLogicalPin> _connectionsNetwork = new Dictionary<string, AbstractLogicalPin>();
     
-    public T CreateElement<T>(LogicalElementType type, string name, params string[] conns) where T : ILogicalElement
+    /// <summary>
+    /// Creates an element and adds it to the network.
+    /// </summary>
+    public T BuildElement<T>(LogicalElementType type, string name, params string[] conns) where T : ILogicalElement
     {
         AutoCount(type);
-        var elem = (T) CreateElement(type, name);
+        var elem = (T) BuildElement(type, name);
         AddToNetwork(elem, conns);
         return elem;
     }
@@ -72,19 +94,19 @@ internal sealed class TopologyBuilder
         return _registry.Contains(element);
     }
 
-    public T CreateElement<T>(LogicalElementType type) where T : ILogicalElement
+    public T BuildElement<T>(LogicalElementType type) where T : ILogicalElement
     {
         AutoCount(type);
-        return (T) CreateElement(type, AutomaticName(type));
+        return (T) BuildElement(type, AutomaticName(type));
     }
 
-    private ILogicalElement CreateElement(LogicalElementType type, string name)
+    private ILogicalElement BuildElement(LogicalElementType type, string name, params object[] parameters)
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException("Value cannot be null or whitespace.", nameof(name));
         if (string.IsNullOrEmpty(name)) throw new ArgumentException("Value cannot be null or empty.", nameof(name));
         
-        var newItem = CreateElementInternal(type, name);
+        var newItem = CreateElementInternal(type, name,parameters);
         
         if (_registry.Contains(newItem))
         {
@@ -95,14 +117,14 @@ internal sealed class TopologyBuilder
         return newItem;
     }
 
-    public void Build(string[] scheme)
+    public IEnumerable<ILogicalElement> Build(string[] scheme)
     {
         if (scheme == null) throw new ArgumentNullException(nameof(scheme));
         if (scheme.Length == 0) throw new ArgumentException("Value cannot be an empty collection.", nameof(scheme));
 
         foreach (var element in scheme)
         {
-            ParseLogicalElement(element);
+            yield return ParseLogicalElement(element);
         }
     }
 
@@ -112,17 +134,17 @@ internal sealed class TopologyBuilder
         return split switch
         {
             ["R", string name, string a, string b] 
-                => this.CreateElement<LogicalResistor>(LogicalElementType.Resistor, name, a, b),
+                => this.BuildElement<LogicalResistor>(LogicalElementType.Resistor, name, a, b),
             ["C", string name, string a, string b]
-                => this.CreateElement<LogicalCapasitor>(LogicalElementType.Capasitor, name, a, b),
+                => this.BuildElement<LogicalCapasitor>(LogicalElementType.Capasitor, name, a, b),
             ["L", string name, string a, string b]
-                => this.CreateElement<LogicalInductor>(LogicalElementType.Inductor, name, a, b),
+                => this.BuildElement<LogicalInductor>(LogicalElementType.Inductor, name, a, b),
             ["T", string name, string e, string b, string c]
-                => this.CreateElement<LogicalInductor>(LogicalElementType.Transistor, name, e, b, c),
+                => this.BuildElement<LogicalInductor>(LogicalElementType.Transistor, name, e, b, c),
             ["GND", string name, string gnd] 
-                => this.CreateElement<LogicalResistor>(LogicalElementType.Groud, name, gnd),
+                => this.BuildElement<LogicalResistor>(LogicalElementType.Groud, name, gnd),
             ["VCC", string name, string vcc] 
-                => this.CreateElement<LogicalResistor>(LogicalElementType.VCC, name, vcc),
+                => this.BuildElement<LogicalResistor>(LogicalElementType.VCC, name, vcc),
             _ => throw new ArgumentException("Cannot parse input pattern")
         };
     }
