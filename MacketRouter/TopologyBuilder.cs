@@ -142,9 +142,9 @@ internal sealed class TopologyBuilder
             ["T", string name, string e, string b, string c]
                 => this.BuildElement<LogicalInductor>(LogicalElementType.Transistor, name, e, b, c),
             ["GND", string name, string gnd] 
-                => this.BuildElement<LogicalResistor>(LogicalElementType.Groud, name, gnd),
+                => this.BuildElement<LogicalGround>(LogicalElementType.Groud, name, gnd),
             ["VCC", string name, string vcc] 
-                => this.BuildElement<LogicalResistor>(LogicalElementType.VCC, name, vcc),
+                => this.BuildElement<LogicalVcc>(LogicalElementType.VCC, name, vcc),
             _ => throw new ArgumentException("Cannot parse input pattern")
         };
     }

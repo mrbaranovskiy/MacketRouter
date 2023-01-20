@@ -68,10 +68,13 @@ public class TraverseTest
     {
         string[] scheme =
         {
+            
+            "VCC 5V+ A1",
             "R R1 A1 B1",
             "C C1 B1 B2",
-            "L L1 B2 B3",
-            "R R2 A1 B3"
+            "L L1 B1 B3",
+            "R R2 A1 B3",
+            "GND Gnd B2",
         };
 
         var top = new TopologyBuilder();
