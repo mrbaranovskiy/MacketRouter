@@ -1,4 +1,5 @@
-﻿using MacketRouter.Logical;
+﻿
+using MacketRouter.Logical;
 using MacketRouter.Logical.LogicalElements;
 
 namespace MacketRouter;
@@ -43,6 +44,5 @@ class TopologyTraverse
         {
             return pin.Owner;
         }
-
     }
 }

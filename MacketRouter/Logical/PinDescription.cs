@@ -15,7 +15,10 @@ namespace MacketRouter.Logical
         }
 
         /// <summary> Gets the text description. </summary>
-        public string Description => $"{_parent?.Name ?? "None"}({Purpose})";  
+        public string Description => $"{_parent?.Name ?? "None"}({Purpose})";
+
+        public string PinReadableDefinition() => Id is {} ? $"{Description}{Id.Value.Number}_{Id.Value.Port}" : Description;
+
         /// <summary>
         /// Gets the pin numbering. Port and some id.
         /// </summary>

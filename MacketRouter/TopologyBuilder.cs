@@ -10,11 +10,24 @@ internal sealed class TopologyBuilder
     private readonly HashSet<ILogicalElement> _registry;
     // Used for counting the logical elements.
     private readonly Dictionary<LogicalElementType, int> _counters;
+    public Dictionary<string, ILogicalElement> Elements { get; }
 
     public TopologyBuilder()
     {
         _registry = new HashSet<ILogicalElement>();
         _counters = new Dictionary<LogicalElementType, int>();
+        Elements = new Dictionary<string, ILogicalElement>();
+    }
+
+    /// <summary>
+    /// Does the same as <see cref="CreateElementInternal"/> and adds the created element to collection. 
+    /// </summary>
+    private ILogicalElement CreateElementInternalAndUpdateNetwork(LogicalElementType type, string name,
+        object[] parameters)
+    {
+        var element = CreateElementInternal(type, name, parameters);
+        Elements.Add(element.Name, element);
+        return element;
     }
 
     private ILogicalElement CreateElementInternal(LogicalElementType type, string name, object[] parameters)
@@ -79,7 +92,7 @@ internal sealed class TopologyBuilder
         {
             if (_connectionsNetwork.ContainsKey(zip.label))
             {
-                var targetPin = _connectionsNetwork[zip.label];
+                var targetPin = _connectionsNetwork[zip.label] ?? throw new ArgumentNullException("_connectionsNetwork[zip.label]");
                 zip.pin.ConnectTo(targetPin);
             }
             else
@@ -106,7 +119,7 @@ internal sealed class TopologyBuilder
             throw new ArgumentException("Value cannot be null or whitespace.", nameof(name));
         if (string.IsNullOrEmpty(name)) throw new ArgumentException("Value cannot be null or empty.", nameof(name));
         
-        var newItem = CreateElementInternal(type, name,parameters);
+        var newItem = CreateElementInternalAndUpdateNetwork(type, name,parameters);
         
         if (_registry.Contains(newItem))
         {
@@ -124,12 +137,15 @@ internal sealed class TopologyBuilder
 
         foreach (var element in scheme)
         {
-            yield return ParseLogicalElement(element);
+            yield return ParseLogicalElement(element);;
         }
     }
 
     private ILogicalElement ParseLogicalElement(string data)
     {
+        if (data == null) throw new ArgumentNullException(nameof(data));
+        if (string.IsNullOrEmpty(data)) throw new ArgumentException("Value cannot be null or empty.", nameof(data));
+        
         var split = data.Split(' ');
         return split switch
         {
@@ -166,7 +182,6 @@ internal sealed class TopologyBuilder
         LogicalElementType.Wire => $"Wire{_counters[type]}",
         LogicalElementType.VCC => $"Vcc{_counters[type]}",
         _ => throw new ArgumentException("Cannot parse")
-        
     };
 
 }

@@ -1,13 +1,13 @@
 ﻿namespace MacketRouter.Logical;
 
-public class PinId
+public struct PinId
 {
-    private readonly short _number;
-    private readonly byte _port;
+    public short Number { get; }
+    public byte Port { get; }
 
     public PinId(short number, byte port)
     {
-        _number = number;
-        _port = port;
+        Number = number;
+        Port = port;
     }
 }

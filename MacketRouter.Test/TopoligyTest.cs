@@ -56,7 +56,7 @@ public class TopoligyTest
         };
 
         var top = new TopologyBuilder();
-        top.Build(scheme);
+        top.Build(scheme).ToArray();
     }
 }
 

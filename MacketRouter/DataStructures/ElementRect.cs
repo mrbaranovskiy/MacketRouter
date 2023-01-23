@@ -13,8 +13,8 @@ public record struct ElementPosition
 
     public ElementPosition(int x, int y)
     {
-        if (y < 0 || y > IBlock.MaxBlockHeight ) throw new ArgumentOutOfRangeException(nameof(y));
-        if (x < 0 || x > IBlock.MaxBlockWidth  ) throw new ArgumentOutOfRangeException(nameof(x));
+        if (y < 0 || y > IHub.MaxBlockHeight ) throw new ArgumentOutOfRangeException(nameof(y));
+        if (x < 0 || x > IHub.MaxBlockWidth  ) throw new ArgumentOutOfRangeException(nameof(x));
         
         X = x;
         Y = y;
